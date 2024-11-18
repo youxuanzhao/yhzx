@@ -290,6 +290,27 @@ fn main() {
                     continue;
                 }
                 match args[1] {
+                    "conscript" => {
+                        let owner = args[3];
+                        let size = args[4].parse::<u32>().unwrap();
+                        for faction in save_file.factions.iter_mut() {
+                            if faction.name == owner {
+                                valid_input = true;
+                                if (size as f32 * faction.provision_rate) as i32 > faction.wealth {
+                                    println!("{}的财富不足以招募这么多士兵。", owner);
+                                } else {
+                                    faction.reserve += size;
+                                    println!(
+                                        "{}招募了{}士兵。扣除的军饷将在部署后结算",
+                                        owner, size
+                                    );
+                                }
+                            }
+                        }
+                        if !valid_input {
+                            println!("参数有误，请重试");
+                        }
+                    }
                     "create" => {
                         if args.len() < 6 {
                             println!("请指定要创建的军队的名称，所有者，位置和规模。");
@@ -1001,20 +1022,20 @@ fn print_manual() {
     println!("save <存档名> - 保存存档(如果文件存在则覆盖，不存在则创建)");
     println!("end_turn - 结束回合，开始结算。");
     println!("export <all|势力名> - 打印全部数据或打印特定势力的数据");
-    println!("set <tax_rate> <州名> <值> - 手动设置州的税率");
-    println!("set <max_tax_rate> <州名> <值> - 手动设置州的最大税率");
-    println!("set <owner> <州名> <势力名> - 手动设置州的所有者");
-    println!("set <aura> <势力名> <光环效果名> <持续时间(永久则输入999)> - 为势力添加光环效果指示");
-    println!("set <change_pp_gain> <势力名> <值> - 将势力的政治点增长增加<值>");
-    println!("set <change_pp> <势力名> <值> - 将势力的政治点增加<值>");
-    println!("set <change_score> <势力名> <值> - 将势力的分数增加<值>");
-    println!("set <population> <州名> <值> - 手动设置州人口");
-    println!("set <faction_attack_modifier> <势力名> <值> - 设置势力的攻击力修正(小数形式)");
-    println!("set <faction_defense_modifier> <势力名> <值> - 设置势力的防御力修正(小数形式)");
-    println!("set <state_attack_modifier> <州名> <值> - 设置州的攻城修正(小数形式)");
-    println!("set <state_defense_modifier> <州名> <值> - 设置州的守城修正(小数形式)");
-    println!("set <change_wealth> <势力名> <值> - 将势力的财富增加<值>");
-    println!("set <change_reserve> <势力名> <值> - 将势力的预备役增加<值>");
+    println!("set tax_rate <州名> <值> - 手动设置州的税率");
+    println!("set max_tax_rate <州名> <值> - 手动设置州的最大税率");
+    println!("set owner <州名> <势力名> - 手动设置州的所有者");
+    println!("set aura <势力名> <光环效果名> <持续时间(永久则输入999)> - 为势力添加光环效果指示");
+    println!("set change_pp_gain <势力名> <值> - 将势力的政治点增长增加<值>");
+    println!("set change_pp <势力名> <值> - 将势力的政治点增加<值>");
+    println!("set change_score <势力名> <值> - 将势力的分数增加<值>");
+    println!("set population <州名> <值> - 手动设置州人口");
+    println!("set faction_attack_modifier <势力名> <值> - 设置势力的攻击力修正(小数形式)");
+    println!("set faction_defense_modifier <势力名> <值> - 设置势力的防御力修正(小数形式)");
+    println!("set state_attack_modifier <州名> <值> - 设置州的攻城修正(小数形式)");
+    println!("set state_defense_modifier <州名> <值> - 设置州的守城修正(小数形式)");
+    println!("set change_wealth <势力名> <值> - 将势力的财富增加<值>");
+    println!("set change_reserve <势力名> <值> - 将势力的预备役增加<值>");
     println!("alliance <势力A> <势力B> - 势力A与势力B结盟");
     println!("betray <势力A> <势力B> - 势力A背弃与势力B的结盟，势力A会承担政治点惩罚");
     println!("army create <军队名> <势力名> <地区> <规模> - 创建军队，需要自定义军队名称");
@@ -1022,6 +1043,7 @@ fn print_manual() {
     println!("army split <军队名> <势力名> <规模> <新军队名> - 将军队分出规模为<规模>的一只新军队");
     println!("army move <军队名> <势力名> <目的地> - 将军队移动到地区(没有做任何的相遇检测和距离检测,需要手动判断)");
     println!("army disband <军队名> <势力名> - 解散军队，将人员转移至预备役");
+    println!("army conscript <势力名> <人数> - 征召预备役人员");
     println!(
         "transfer <wealth|reserve|pp> <势力A> <势力B> <值> - 将<值>点<资源类型>从势力A转移至势力B"
     );
